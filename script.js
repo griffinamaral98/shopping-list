@@ -6,6 +6,11 @@ const addItemText = document.querySelector("#item-input");
 const addItemHandler = (e) => {
   e.preventDefault();
 
+  if (addItemText.value === "") {
+    alert("Please add an item");
+    return;
+  }
+
   const li = document.createElement("li");
   const icon = document.createElement("i");
   const btn = document.createElement("button");
@@ -19,6 +24,8 @@ const addItemHandler = (e) => {
   itemsList.appendChild(li);
 
   btn.addEventListener("click", removeItemHandler);
+
+  checkUI();
 };
 
 addItem.addEventListener("click", addItemHandler);
@@ -26,7 +33,10 @@ addItem.addEventListener("click", addItemHandler);
 // Remove Single Item
 const removeItem = document.querySelectorAll(".remove-item");
 const removeItemHandler = (e) => {
-  e.target.parentElement.parentElement.remove();
+  if (confirm("Are you sure?")) {
+    e.target.parentElement.parentElement.remove();
+  }
+  checkUI();
 };
 
 removeItem.forEach((item) => item.addEventListener("click", removeItemHandler));
@@ -38,9 +48,23 @@ const clearItemsHandler = () => {
   while (itemsList.firstChild) {
     itemsList.firstChild.remove();
   }
+  checkUI();
 };
 
 clearBtn.addEventListener("click", clearItemsHandler);
+
+const itemFilter = document.querySelector("#filter");
+const checkUI = () => {
+  const items = itemsList.querySelectorAll("li");
+
+  if (items.length === 0) {
+    clearBtn.style.display = "none";
+    itemFilter.style.display = "none";
+  } else {
+    clearBtn.style.display = "block";
+    itemFilter.style.display = "block";
+  }
+};
 
 // Brad solution
 // const itemForm = document.getElementById("item-form");
