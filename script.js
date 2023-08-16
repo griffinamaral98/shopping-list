@@ -10,7 +10,7 @@ const displayItems = () => {
 };
 
 // Add a New Item
-const addItem = document.querySelector(".btn");
+const addItemBtn = document.querySelector(".btn");
 const addItemText = document.querySelector("#item-input");
 const itemsList = document.querySelector("ul");
 
@@ -23,6 +23,20 @@ const addItemHandler = (e) => {
     return;
   }
 
+  if (isEditMode) {
+    const itemToEdit = itemsList.querySelector(".edit-mode");
+
+    removeItemFromStorage(itemToEdit.textContent);
+    itemToEdit.classList.remove("edit=mode");
+    itemToEdit.remove();
+    isEditMode = false;
+  } else {
+    if (checkIfItemExists(newItem)) {
+      alert("That item already exists!");
+      return;
+    }
+  }
+
   addItemToDOM(newItem);
 
   addItemToStorage(newItem);
@@ -32,7 +46,7 @@ const addItemHandler = (e) => {
   checkUI();
 };
 
-addItem.addEventListener("click", addItemHandler);
+addItemBtn.addEventListener("click", addItemHandler);
 
 const addItemToDOM = (item) => {
   const li = document.createElement("li");
@@ -74,6 +88,8 @@ document.addEventListener("DOMContentLoaded", displayItems);
 function onClickItem(e) {
   if (e.target.parentElement.classList.contains("remove-item")) {
     removeItem(e.target.parentElement.parentElement);
+  } else {
+    setItemToEdit(e.target);
   }
 }
 
@@ -118,6 +134,8 @@ clearBtn.addEventListener("click", clearItemsHandler);
 // Filter Items
 const itemFilter = document.querySelector("#filter");
 const checkUI = () => {
+  addItemText.value = "";
+
   const items = document.querySelectorAll("li");
 
   if (items.length === 0) {
@@ -127,8 +145,14 @@ const checkUI = () => {
     clearBtn.style.display = "block";
     itemFilter.style.display = "block";
   }
+
+  addItemBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Add Item';
+  addItemBtn.style.backgroundColor = "#333";
+
+  isEditMode = false;
 };
 
+// Filter Items
 const filterItems = (e) => {
   const text = e.target.value.toLowerCase();
   const items = itemsList.querySelectorAll("li");
@@ -146,65 +170,32 @@ const filterItems = (e) => {
 
 itemFilter.addEventListener("input", filterItems);
 
+// Edit Items
+let isEditMode = false;
+
+const setItemToEdit = (item) => {
+  isEditMode = true;
+
+  itemsList
+    .querySelectorAll("li")
+    .forEach((i) => i.classList.remove("edit-mode"));
+
+  item.classList.add("edit-mode");
+  addItemBtn.innerHTML = '<i class="fa-solid fa-pen"></i> Update Item';
+  addItemBtn.style.backgroundColor = "#228B22";
+  addItemText.value = item.textContent;
+};
+
+const checkIfItemExists = (item) => {
+  const itemsFromStorage = getItemsFromStorage();
+
+  return itemsFromStorage.includes(item);
+};
+
+body.addEventListener("click", () => {
+  if (isEditMode) {
+    isEditMode = false;
+  }
+});
+
 checkUI();
-
-// Brad solution
-// const itemForm = document.getElementById("item-form");
-// const itemInput = document.getElementById("item-input");
-// const itemList = document.getElementById("item-list");
-// const clearBtn = document.getElementById("clear");
-
-// const addItem = (e) => {
-//   e.preventDefault();
-
-//   const newItem = itemInput.value;
-
-// Validate Input
-//   if (itemInput.value === "") {
-//     alert("Please add an item");
-//     return;
-//   }
-
-// Create list item
-//   const li = document.createElement("li");
-//   li.appendChild(document.createTextNode(newItem));
-
-//   const button = createButton("remove-item btn-link text-red");
-//   li.appendChild(button);
-
-//   itemList.appendChild(li);
-
-//   itemInput.value = "";
-// };
-
-// const createButton = (classes) => {
-//   const button = document.createElement("button");
-//   button.className = classes;
-//   const icon = createIcon("fa-solid fa-xmark");
-//   button.appendChild(icon);
-//   return button;
-// };
-
-// const createIcon = (classes) => {
-//   const icon = document.createElement("i");
-//   icon.className = classes;
-//   return icon;
-// };
-
-// Remove list item
-// const removeItem = (e) => {
-//   if (e.target.parentElement.classList.contains("remove-item")) {
-//     e.target.parentElement.parentElement.remove();
-//   }
-// };
-
-// const clearItems = () => {
-//   while (itemList.firstChild) {
-//     itemList.removeChild(itemList.firstChild);
-//   }
-// };
-
-// Event Listeners
-// itemForm.addEventListener("submit", addItem);
-// itemList.addEventListener("click", removeItem);
-// clearBtn.addEventListener("click", clearItems);
