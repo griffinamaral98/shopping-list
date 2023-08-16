@@ -1,3 +1,4 @@
+// My solution
 // Add a New Item
 const addItem = document.querySelector(".btn");
 const addItemText = document.querySelector("#item-input");
@@ -20,12 +21,34 @@ const addItemHandler = (e) => {
   btn.addEventListener("click", removeItemHandler);
 };
 
+addItem.addEventListener("click", addItemHandler);
+
+// Remove Single Item
+const removeItem = document.querySelectorAll(".remove-item");
+const removeItemHandler = (e) => {
+  e.target.parentElement.parentElement.remove();
+};
+
+removeItem.forEach((item) => item.addEventListener("click", removeItemHandler));
+
+// Clear All Items
+const clearBtn = document.querySelector(".btn-clear");
+const itemsList = document.querySelector("ul");
+const clearItemsHandler = () => {
+  while (itemsList.firstChild) {
+    itemsList.firstChild.remove();
+  }
+};
+
+clearBtn.addEventListener("click", clearItemsHandler);
+
 // Brad solution
 // const itemForm = document.getElementById("item-form");
 // const itemInput = document.getElementById("item-input");
 // const itemList = document.getElementById("item-list");
+// const clearBtn = document.getElementById("clear");
 
-// const addItem1 = (e) => {
+// const addItem = (e) => {
 //   e.preventDefault();
 
 //   const newItem = itemInput.value;
@@ -62,5 +85,20 @@ const addItemHandler = (e) => {
 //   return icon;
 // };
 
+// Remove list item
+// const removeItem = (e) => {
+//   if (e.target.parentElement.classList.contains("remove-item")) {
+//     e.target.parentElement.parentElement.remove();
+//   }
+// };
+
+// const clearItems = () => {
+//   while (itemList.firstChild) {
+//     itemList.removeChild(itemList.firstChild);
+//   }
+// };
+
 // Event Listeners
-// itemForm.addEventListener("submit", addItem1);
+// itemForm.addEventListener("submit", addItem);
+// itemList.addEventListener("click", removeItem);
+// clearBtn.addEventListener("click", clearItems);
