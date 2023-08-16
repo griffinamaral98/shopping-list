@@ -1,61 +1,124 @@
 // My solution
+const displayItems = () => {
+  const itemsFromStorage = getItemsFromStorage();
+
+  itemsFromStorage.forEach((item) => {
+    addItemToDOM(item);
+  });
+
+  checkUI();
+};
+
 // Add a New Item
 const addItem = document.querySelector(".btn");
 const addItemText = document.querySelector("#item-input");
+const itemsList = document.querySelector("ul");
 
 const addItemHandler = (e) => {
   e.preventDefault();
+  const newItem = addItemText.value;
 
   if (addItemText.value === "") {
     alert("Please add an item");
     return;
   }
 
-  const li = document.createElement("li");
-  const icon = document.createElement("i");
-  const btn = document.createElement("button");
+  addItemToDOM(newItem);
 
-  li.textContent = addItemText.value;
-  btn.className = "remove-item btn-link text-red";
-  icon.className = "fa-solid fa-xmark";
+  addItemToStorage(newItem);
 
-  btn.appendChild(icon);
-  li.appendChild(btn);
-  itemsList.appendChild(li);
-
-  btn.addEventListener("click", removeItemHandler);
+  addItemText.value = "";
 
   checkUI();
 };
 
 addItem.addEventListener("click", addItemHandler);
 
-// Remove Single Item
-const removeItem = document.querySelectorAll(".remove-item");
-const removeItemHandler = (e) => {
-  if (confirm("Are you sure?")) {
-    e.target.parentElement.parentElement.remove();
-  }
-  checkUI();
+const addItemToDOM = (item) => {
+  const li = document.createElement("li");
+  const icon = document.createElement("i");
+  const btn = document.createElement("button");
+
+  li.textContent = item;
+  btn.className = "remove-item btn-link text-red";
+  icon.className = "fa-solid fa-xmark";
+
+  btn.appendChild(icon);
+  li.appendChild(btn);
+  itemsList.appendChild(li);
 };
 
-removeItem.forEach((item) => item.addEventListener("click", removeItemHandler));
+const addItemToStorage = (item) => {
+  const itemsFromStorage = getItemsFromStorage();
+
+  itemsFromStorage.push(item);
+
+  localStorage.setItem("items", JSON.stringify(itemsFromStorage));
+};
+
+const getItemsFromStorage = () => {
+  let itemsFromStorage;
+
+  if (localStorage.getItem("items") === null) {
+    itemsFromStorage = [];
+  } else {
+    itemsFromStorage = JSON.parse(localStorage.getItem("items"));
+  }
+
+  return itemsFromStorage;
+};
+
+document.addEventListener("DOMContentLoaded", displayItems);
+
+// Remove Single Item
+function onClickItem(e) {
+  if (e.target.parentElement.classList.contains("remove-item")) {
+    removeItem(e.target.parentElement.parentElement);
+  }
+}
+
+function removeItem(item) {
+  if (
+    confirm(`Are you sure you want to remove the item "${item.textContent}"?`)
+  ) {
+    // Remove item from DOM
+    item.remove();
+
+    // Remove item from storage
+    removeItemFromStorage(item.textContent);
+
+    checkUI();
+  }
+}
+
+itemsList.addEventListener("click", onClickItem);
+
+const removeItemFromStorage = (item) => {
+  let itemsFromStorage = getItemsFromStorage();
+
+  itemsFromStorage = itemsFromStorage.filter((i) => i !== item);
+
+  localStorage.setItem("items", JSON.stringify(itemsFromStorage));
+};
 
 // Clear All Items
 const clearBtn = document.querySelector(".btn-clear");
-const itemsList = document.querySelector("ul");
 const clearItemsHandler = () => {
   while (itemsList.firstChild) {
     itemsList.firstChild.remove();
   }
+
+  localStorage.removeItem("items");
+
   checkUI();
 };
 
 clearBtn.addEventListener("click", clearItemsHandler);
 
+// Filter Items
 const itemFilter = document.querySelector("#filter");
 const checkUI = () => {
-  const items = itemsList.querySelectorAll("li");
+  const items = document.querySelectorAll("li");
 
   if (items.length === 0) {
     clearBtn.style.display = "none";
@@ -82,6 +145,8 @@ const filterItems = (e) => {
 };
 
 itemFilter.addEventListener("input", filterItems);
+
+checkUI();
 
 // Brad solution
 // const itemForm = document.getElementById("item-form");
