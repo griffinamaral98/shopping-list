@@ -66,6 +66,23 @@ const checkUI = () => {
   }
 };
 
+const filterItems = (e) => {
+  const text = e.target.value.toLowerCase();
+  const items = itemsList.querySelectorAll("li");
+
+  items.forEach((item) => {
+    const itemName = item.firstChild.textContent.toLowerCase();
+
+    if (itemName.includes(text)) {
+      item.style.display = "flex";
+    } else {
+      item.style.display = "none";
+    }
+  });
+};
+
+itemFilter.addEventListener("input", filterItems);
+
 // Brad solution
 // const itemForm = document.getElementById("item-form");
 // const itemInput = document.getElementById("item-input");
